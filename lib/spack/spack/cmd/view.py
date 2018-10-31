@@ -74,7 +74,7 @@ actions_status = ["statlink", "status", "check"]
 
 def relaxed_disambiguate(specs, view):
     """
-        When dealing with querying actions (remove/status) we only need to 
+        When dealing with querying actions (remove/status) we only need to
         disambiguate among specs in the view
     """
     view_specs = set(view.get_all_specs())
@@ -84,7 +84,7 @@ def relaxed_disambiguate(specs, view):
             tty.die("Spec matches no installed packages.")
 
         matching_in_view = [ms for ms in matching_specs if ms in view_specs]
-        
+
         if len(matching_in_view) > 1:
             args = ["Spec matches multiple packages.",
                     "Matching packages:"]
@@ -92,11 +92,12 @@ def relaxed_disambiguate(specs, view):
                      s.cformat('$_$@$%@$=') for s in matching_in_view]
             args += ["Use a more specific spec."]
             tty.die(*args)
-        
+
         return matching_in_view[0] if matching_in_view else matching_specs[0]
 
     # make function always return a list to keep consistency between py2/3
     return list(map(squash, map(spack.store.db.query, specs)))
+
 
 def setup_parser(sp):
     setup_parser.parser = sp
@@ -138,8 +139,9 @@ def setup_parser(sp):
     for cmd, act in file_system_view_actions.items():
         act.add_argument('path', nargs=1,
                          help="path to file system view directory")
-        act.add_argument('--projection-file', default='', dest='projection_file',
-                         help="Initialize projection using specification from file.")
+        act.add_argument('--projection-file', default='',
+                         dest='projection_file',
+                         help="Initialize view using projections from file.")
 
         if cmd == "remove":
             grp = act.add_mutually_exclusive_group(required=True)
@@ -193,8 +195,7 @@ def view(parser, args):
         path, spack.store.layout,
         projections=ordered_projections,
         ignore_conflicts=getattr(args, "ignore_conflicts", False),
-        link=os.link if args.action in ["hardlink", "hard"]
-        else os.symlink,
+        link=os.link if args.action in ["hardlink", "hard"] else os.symlink,
         verbose=args.verbose)
 
     # Process common args and specs
@@ -213,7 +214,7 @@ def view(parser, args):
             specs = view.get_all_specs()
         else:
             specs = relaxed_disambiguate(specs, view)
-            
+
     else:
         # status and remove can map a partial spec to packages in view
         specs = relaxed_disambiguate(specs, view)
